@@ -1,14 +1,16 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import prisma from "../prisma/client";
 
-export const getTasks = async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
+import { AuthRequest } from "../middleware/authMiddleware";
+
+export const getTasks = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
   const tasks = await prisma.task.findMany({ where: { userId } });
   res.json(tasks);
 };
 
-export const createTask = async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
+export const createTask = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
   const { title, description, scheduledAt } = req.body;
 
   try {
@@ -27,7 +29,7 @@ export const createTask = async (req: Request, res: Response) => {
   }
 };
 
-export const updateTask = async (req: Request, res: Response) => {
+export const updateTask = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
   const { title, completed, description, scheduledAt } = req.body;
 
@@ -49,7 +51,7 @@ export const updateTask = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
 
   try {
